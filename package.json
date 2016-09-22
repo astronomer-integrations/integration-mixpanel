@@ -1,5 +1,5 @@
 {
-  "name": "integration-mixpanel",
+  "name": "@astronomerio/integration-mixpanel",
   "version": "1.0.20",
   "integration-version": "2016-06-09",
   "private": true,
