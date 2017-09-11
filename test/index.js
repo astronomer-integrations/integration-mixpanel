@@ -4,6 +4,7 @@ var helpers = require('./helpers');
 var assert = require('assert');
 var time = require('unix-time');
 var Mixpanel = require('..');
+var uuid = require('uuid');
 
 describe('Mixpanel', function(){
   var mixpanel;
@@ -122,7 +123,25 @@ describe('Mixpanel', function(){
         .set({ secret: 'x' })
         .set({ token: 'x' })
         .identify({})
-        .error('$distinct_id, missing or empty', done);
+        .end(function(err, res) {
+          assert.equal(err.status, 400);
+          done();
+        });
+    });
+
+
+    it('should send identify with context correctly', function(done){
+      var json = updateFixtureTimestamp(test.fixture('identify-context'));
+
+      //Test if the context settings have come through properly.
+      test
+        .set(settings)
+        .identify(json.input)
+        .query({ ip: 0, verbose: 1 })
+        .query('data', json.output, decode)
+        .expects(200)
+        //What does the query need to do and check here?
+        .end(done);
     });
   });
 
@@ -146,11 +165,28 @@ describe('Mixpanel', function(){
         });
     });
 
+    it('should have proper error status code', function(done){
+      var json = test.fixture('track-basic');
+      json.input.userId = uuid();
+      // sending timestamp far in the future will trigger an error response from their API
+      json.input.timestamp = new Date('2123-09-16');
+    
+      test
+        .set(settings)
+        .set({ people: false })
+        .track(json.input)
+        .end(function(err, res){
+          console.log(res);
+          assert.equal(err.status, 400);
+          done();
+        });
+    });
+
     it('should send revenue correctly', function(done){
       var json = test.fixture('track-revenue');
       var timestamp = json.input.timestamp = new Date();
       json.output.$append.$transactions.$time = timestamp.toISOString().slice(0,19);
-      
+
       var suite = test
         .requests(2) // total number of requests
         .set(settings)
@@ -173,7 +209,7 @@ describe('Mixpanel', function(){
       var json = test.fixture('track-ignore-time-with-revenue');
       var timestamp = json.input.timestamp = new Date();
       json.output.$append.$transactions.$time = timestamp.toISOString().slice(0,19);
-      
+
       var suite = test
         .requests(2) // total number of requests
         .set(settings)
@@ -208,6 +244,24 @@ describe('Mixpanel', function(){
           done();
         });
     });
+
+    it('should send track with referrer correctly', function(done){
+      var json = test.fixture('track-referrer');
+      test
+        .set(settings)
+        .set({ people: false })
+        .track(json.input)
+        .query({ api_key: settings.apiKey })
+        .query({ verbose: '1' })
+        .query('data', json.output, decode)
+        .end(function(err, res){
+          if (err) return done(err);
+          assert.equal(1, res.length);
+          assert.equal(200, res[0].status);
+          done();
+        });
+    });
+
 
     // TODO: why are these tests not checking output payload?
     it('should be able to track correctly', function(done){
