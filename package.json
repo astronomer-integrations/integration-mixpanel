@@ -1,6 +1,6 @@
 {
   "name": "@astronomerio/integration-mixpanel",
-  "version": "1.0.20",
+  "version": "3.3.2",
   "integration-version": "2016-06-09",
   "private": true,
   "description": "Mixpanel server-side integration",
@@ -22,18 +22,24 @@
     "ms": "^0.6.2",
     "obj-case": "^0.2.0",
     "reject": "0.0.1",
-    "segmentio-integration": "^3.2.1",
+    "segmentio-integration": "^5.1.0",
     "ua-parser-js": "^0.7.3",
     "unix-time": "^1.0.1"
   },
   "devDependencies": {
+    "@segment/eslint-config": "^3.4.0",
+    "eslint": "^2.13.1",
+    "eslint-plugin-mocha": "^2.2.0",
+    "eslint-plugin-react": "^4.3.0",
+    "eslint-plugin-require-path-exists": "^1.1.5",
     "istanbul": "0.x",
     "jscs": "1.x",
     "merge-util": "^0.1.0",
     "mocha": "2.x",
     "segmentio-facade": "2.x",
-    "segmentio-integration-tester": "1.x",
+    "segmentio-integration-tester": "2.x",
     "should": "4.x",
-    "uid": "0.0.2"
+    "uid": "0.0.2",
+    "uuid": "^3.0.1"
   }
 }
